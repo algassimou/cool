@@ -76,7 +76,7 @@ int symbole_table_init (SymboleTable *st) {
 
 void symbole_table_del(SymboleTable *st) {
   assert (st);
-  hash_table_destroy(st -> table, NULL, symbol_del);
+  hash_table_destroy(st -> table, NULL, NULL);
   liste_destroy(st -> scopes);
   free (st);
 }

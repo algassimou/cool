@@ -52,9 +52,17 @@ int string_buffer_set(StringBuffer *buffer, char c, int pos) {
   return 0;
 }
 
+char *string_buffer_look_data(StringBuffer *buffer) {
+  assert (buffer);
+  assert(buffer -> data);
+
+  string_buffer_append(buffer, 0);
+  string_buffer_retract(buffer, 1);
+  return buffer -> data;
+}
 
 
-char *string_buffer_data(StringBuffer *buffer) {
+char *string_buffer_get_data(StringBuffer *buffer) {
   assert (buffer);
   assert(buffer -> data);
 

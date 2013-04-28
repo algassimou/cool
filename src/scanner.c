@@ -45,18 +45,16 @@ int scanner_init (Scanner *scanner, const char *filename, FILE *file) {
 }
 
 void scanner_del (Scanner *scanner) {
-  if (scanner) {
-    if (scanner -> buffers) {
-      free (scanner -> buffers [0]);
-      free (scanner -> buffers [1]);
-    }
+  assert(scanner);
+  assert(scanner -> string_buffer);
 
-    if (scanner -> string_buffer) {
-      string_buffer_del(scanner -> string_buffer);
-    }
-
-    free(scanner);
+  if (scanner -> buffers) {
+    free (scanner -> buffers [0]);
+    free (scanner -> buffers [1]);
   }
+
+  string_buffer_del(scanner -> string_buffer);
+  free(scanner);
 }
 
 int scanner_next_char (Scanner *scanner) {
@@ -207,12 +205,12 @@ int yylex (void *s) {
 	} 
       
 	(scanner -> pre)-- ;
-	char *key = string_buffer_data(scanner -> string_buffer);       
+	char *key = string_buffer_look_data(scanner -> string_buffer);       
 	Symbol *sym = st_find_symbol(tableSymbole, key);
 
 	if (sym == NULL) { 
 	  //printf("%s new id \n", key);
-	  yylval.id = key ;
+	  yylval.id = string_buffer_get_data(scanner -> string_buffer) ;
 	  return ID ;
 	} else if (sym -> scope == keywords_scope) {
 	  //printf("%s keyword \n", key);
@@ -227,101 +225,3 @@ int yylex (void *s) {
     }
   }
 }
-
-/*
-int yylex (void *s) {
-  assert (s);
-  Scanner *scanner = (Scanner *) s;
-  scanner -> string_buffer -> len = 0;
-
-  int etat ;
-  int c = scanner_next_char(scanner);
-
-  if (c == -1) {
-    return 0;
-  }
-
-  if (isspace(c)) {
-    c = scanner_skip_space (scanner, c);
-  }  
-
-  // comment's gestion
-  switch (c) {
-  case '-' : 
-    c = scanner_next_char(scanner);
-    if (c == '-') { // comment single line
-      printf ("comment");
-      while ((c != -1) && (c != '\n')) {
-	c = scanner_next_char(scanner);
-      }
-      (scanner -> pre)-- ;
-    } else {
-      (scanner -> pre)-- ;
-      return MOINS;
-    }
-    break;
-  case '(' : return LPAREN ;
-  }
-
-  c = scanner_next_char(scanner);
-
-  if (c == -1) {
-    return 0;
-  }
-  
-  if (isspace(c)) {
-    c = scanner_skip_space (scanner, c);
-  }  
-
-  switch (c) {
-  case '+' : return PLUS;
-  case '*' : return MULT;
-  case '/' : return DIV;
-  case ')' : return RPAREN; 
-  case ';' : return SEMI;
-  case ':' : return COLON;
-  case ',' : return COMMA;
-  case '{' : return LBRACE;
-  case '}' : return RBRACE;
-  case '[' : return LBRACKET;
-  case ']' : return RBRACKET;
-  case '.' : return PERIOD;
-  case '=' : return EQUAL ; // a fixer = ou ==
-  }
-
-  if (isalpha (c) || c == '_') {
-    etat = 200;
-  }
-
-  while (1) {
-    string_buffer_append (scanner -> string_buffer, c);
-    c = scanner_next_char(scanner);
-
-    switch (etat) {
-    case 200 : /* identifier 
-      if (isIdent(c)) {
-	continue;
-      } 
-      
-      (scanner -> pre)-- ;
-      char *key = string_buffer_data(scanner -> string_buffer); 
-      
-      Symbol *sym = st_find_symbol(tableSymbole, key);
-      if (sym == NULL) { 
-	//printf("%s new id \n", key);
-	yylval.id = key ;
-	return ID ;
-      } else if (sym -> scope == keywords_scope) {
-	//printf("%s keyword \n", key);
-	return  * ((int *) sym -> val);
-      } else {
-	//printf("%s old id\n", key);
-	yylval.id = key ;
-	return ID ;
-      }
- 
-      break;
-    }
-  }
-}
-*/

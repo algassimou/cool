@@ -157,8 +157,13 @@ int hash_table_destroy(HashTable *h,
 		      void (*destroy_cle) (void*), 
 		      void (*destroy_val) (void*)
 		      ){ 
-  assert(h != NULL);
+  assert(h);
   
+  /* ListElem *liste_elt = NULL ; */
+  /* if (liste_rm(h -> liste_listes_collision, NULL, (void **) &liste_elt) == -1) */
+  /*   return -1; */
+
+
   ListElem *liste_elt = LISTE_TETE(h->liste_listes_collision);
 
   while (liste_elt) {
@@ -181,6 +186,7 @@ int hash_table_destroy(HashTable *h,
     free(liste);
   }
 
+  free(h->table);
   return 0 ;
 }
 
