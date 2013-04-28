@@ -15,8 +15,16 @@ static char * keywords [] = {
   NULL
 } ;
 
-static int keywords_scope_init () {
+static void keyword_del (void *key, void *val){
+  free(val);
+}
 
+static void compile_end () {
+  //end keywords scope
+  st_end_scope(tableSymbole);
+}
+
+static int compile_init () {  
   if (st_create_scope(tableSymbole) == -1)
     return -1 ;
 
@@ -54,7 +62,7 @@ static int keywords_scope_init () {
  
     // create and init symbole
     sym = symbol_create();
-    symbol_init(sym, free);
+    symbol_init(sym, keyword_del);
     sym -> id = key;
     sym -> val = val;
     sym -> scope = keywords_scope;
@@ -64,16 +72,10 @@ static int keywords_scope_init () {
 
     key = keywords[++cpt];
   }
-}
-
-static int compile_init () {  
-  keywords_scope_init();
-  // add a global scope
-  if (st_create_scope(tableSymbole) == -1)
-    return -1 ;
 
   nerrors = 0;
   silence = 0;
+
   /*
   int cpt = 0;
   char *key = keywords[cpt];
@@ -151,6 +153,7 @@ int main(int argc, char *argv[])
   fprintf(stdout, "============== end conpilation ==============\n");
 
   // destructions
+  compile_end();
   symbole_table_del(tableSymbole);
   scanner_del(scanner);
   fclose(input);

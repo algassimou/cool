@@ -18,7 +18,15 @@
 %start program
 
 %%
-program : classes
+program : {
+  // add a global scope
+  if (st_create_scope(tableSymbole) == -1){
+    compile_panic("not enable to create a new scope");
+  }
+} classes {
+  // end global scope
+  st_end_scope(tableSymbole);
+}
 
 classes : def_class classes | def_class 
 

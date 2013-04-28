@@ -1,0 +1,9 @@
+class Point {
+	abscisse : Integer;
+	ordonate : Integer;
+};
+
+class Rectangle inherits Point {
+	longueur : Integer;
+	largeur : Integer;
+};

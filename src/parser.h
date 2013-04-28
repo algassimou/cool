@@ -86,7 +86,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 7 "/home/algassimou/Programmation/compilation/cool_compiler/src/parser.y"
+#line 7 "/home/algassimou/Programmation/compilation/cool/src/parser.y"
 
   char *id ;
   int ival;
@@ -94,7 +94,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 98 "/home/algassimou/Programmation/compilation/cool_compiler/src/parser.h"
+#line 98 "/home/algassimou/Programmation/compilation/cool/src/parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

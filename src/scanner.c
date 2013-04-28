@@ -147,7 +147,7 @@ int yylex (void *s) {
     case '-' : 
       c = scanner_next_char(scanner);
       if (c == '-') { // comment single line
-	printf ("comment single line");
+	//printf ("comment single line");
 	while ((c != -1) && (c != '\n')) {
 	  c = scanner_next_char(scanner);
 	}
@@ -161,7 +161,7 @@ int yylex (void *s) {
     case '(' :
       c = scanner_next_char(scanner);
       if (c == '*') { // comment multi lines
-	printf ("comment multi line");
+	//printf ("comment multi line");
 	int stop = 0, star = 0;
 	while (!stop){
 	  c = scanner_next_char(scanner);

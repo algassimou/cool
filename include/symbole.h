@@ -9,12 +9,12 @@ typedef struct {
   void *val;
   void *scope;
 
-  void (*val_del) (void *);
+  void (*symbol_del) (void *, void *);
 } Symbol ;
 
 // life cycle
 extern Symbol *symbol_create ();
-extern int symbol_init (Symbol *s, void (*val_del) (void *)) ;
+extern int symbol_init (Symbol *s, void (*symbol_del) (void *, void *)) ;
 extern void symbol_del (void *s);
 
 typedef struct {
@@ -36,14 +36,5 @@ extern void *st_current_scope (SymboleTable *st);
 // symbole operations
 extern int st_add_symbol (SymboleTable *st, Symbol *s);
 extern Symbol *st_find_symbol (SymboleTable *st, char *id);
-
-// operations
-
-/*extern int symbole_table_insert (SymboleTable *st, void *sym, void *val);
-extern Couple *symbole_table_search (SymboleTable *st, void *sym);
-//extern int symbole_table_rm (SymboleTable *st, void *sym);
-extern int symbole_table_add_block (SymboleTable *st);
-extern int symbole_table_rm_block (SymboleTable *st);
-*/
 
 #endif /* __TABLE_SYMBOLE__ */

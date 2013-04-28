@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
@@ -11,9 +12,9 @@ Symbol *symbol_create () {
   return s;
 }
 
-extern int symbol_init (Symbol *s, void (*val_del) (void *)) {
+int symbol_init (Symbol *s, void (*symbol_del) (void *, void *)) {
   assert(s);
-  s -> val_del = val_del ;
+  s -> symbol_del = symbol_del ;
   return 0;
 }
 
@@ -22,8 +23,14 @@ void symbol_del (void *s) {
   assert(s);
   Symbol * sym = (Symbol *)s; 
 
-  if (sym -> val_del) {
-    sym -> val_del (sym -> val);
+  printf ("DEL key (%s) val (%p) scope (%p)\n",
+  	  (char *) sym -> id,
+  	  sym -> val,
+  	  sym -> scope);
+
+
+  if (sym -> symbol_del) {
+    sym -> symbol_del (sym -> id, sym -> val);
   }
 
   free(sym);
@@ -91,7 +98,6 @@ int st_end_scope(SymboleTable *st) {
 
   Liste *scope = NULL;
 
-
   if (liste_rm(st -> scopes, NULL, (void **)&scope) == -1)
     return -1;
 
@@ -113,6 +119,7 @@ int st_end_scope(SymboleTable *st) {
     if (dliste_rm(collision, val, NULL) == -1)
       return -1 ;
 
+    symbol_del(COUPLE_SECOND(c));
     free(c);
   }
 
@@ -140,18 +147,22 @@ int st_check_scope (SymboleTable *st, char *s) {
   return sym -> scope == LISTE_ELEM_DATA(LISTE_TETE(st->scopes)) ;
 }
 
-
 int st_add_symbol (SymboleTable *st, Symbol *s) {
   assert(st);
   assert(s);
 
-  Liste *scope = (Liste *) LISTE_ELEM_DATA(LISTE_TETE(st -> scopes)) ;
-  
+  printf ("ADD key (%s) val (%p) scope (%p)\n",
+  	  (char *) s -> id,
+  	  s -> val,
+  	  s -> scope);
+
+
   // insertion dans la table de hachage
   if (hash_table_add(st->table, s->id, s) == -1)
     return -1 ;
   
   // gestion de la portée
+  Liste *scope = (Liste *) LISTE_ELEM_DATA(LISTE_TETE(st -> scopes)) ;
   uint32_t hash = st->table->hash_function(s -> id) ;
   DListe *collision = st->table->table[hash % st->table->size] ;
   DListElem *elt = DLISTE_HEAD(collision) ;
