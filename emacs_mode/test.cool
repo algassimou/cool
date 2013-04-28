@@ -1,3 +1,10 @@
-1234
-		678
-10
+class MyClass {
+	a :  Integer ;
+	b :  Integer ; 
+};
+
+class MyClass2 inherits MyClass {
+	a : Integer;
+	b : Integer;
+}
+	
