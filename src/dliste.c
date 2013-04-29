@@ -103,7 +103,7 @@ int dliste_rm(DListe * dl , DListElem * elt , void **data)
   return 0 ;
 }
 
-int dliste_destroy(DListe *dl)
+int dliste_del(DListe *dl)
 {
   void * data = NULL ;
 
@@ -113,6 +113,7 @@ int dliste_destroy(DListe *dl)
       if (DLISTE_REMOVE(dl))
 	DLISTE_REMOVE(dl)(data);
     }
-  memset(dl , 0 , sizeof(DListe));
+
+  free(dl);
   return 0 ;
 }

@@ -27,7 +27,7 @@ int dliste_init (DListe * , void (*)(void *));
 int dliste_add_next (DListe * , DListElem * , const void *);
 int dliste_add_previous (DListe * , DListElem * , const void *);
 int dliste_rm (DListe * , DListElem * , void **);
-int dliste_destroy(DListe *);
+int dliste_del(DListe *);
 
 
 #endif /*__DLIST__*/

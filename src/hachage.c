@@ -11,12 +11,10 @@ HashTable *hash_table_create () {
   ht -> table = malloc (HASH_TABLE_SIZE_MAX * sizeof (DListe*)) ;
   assert (ht -> table);
 
-  ht -> liste_listes_collision = malloc (sizeof(Liste));
-  assert (ht -> liste_listes_collision);
+  ht -> liste_listes_collision = liste_create();
 
   return ht ;
 }
-
 
 int hash_table_init (HashTable *h, 
 		    uint32_t (*hash) (const void *),
@@ -35,6 +33,41 @@ int hash_table_init (HashTable *h,
   h->count = 0 ;
   h->hash_function = hash ;
 
+  return 0 ;
+}
+
+
+int hash_table_del(HashTable *h, 
+		      void (*destroy_cle) (void*), 
+		      void (*destroy_val) (void*)
+		      ){ 
+  assert(h);
+  
+
+  DListe *dliste = NULL ;
+  while (LISTE_SIZE(h -> liste_listes_collision) != 0) {
+    if (liste_rm(h -> liste_listes_collision, NULL, (void **) &dliste) == -1)
+      return -1;
+
+    Couple *c = NULL ;
+    while (DLISTE_SIZE(dliste) != 0) {
+      if (dliste_rm(dliste, NULL, (void **) &c) == -1)
+	return -1;
+
+      if (destroy_cle)
+	destroy_cle(COUPLE_FIRST(c));
+
+      if (destroy_val)
+	destroy_val(COUPLE_SECOND(c));
+
+      free(c);
+    }
+    free(dliste);
+  }
+
+  free(h->table);
+  free(h->liste_listes_collision);
+  free(h);
   return 0 ;
 }
 
@@ -151,43 +184,6 @@ Couple *hash_table_search (HashTable *h, void *cle){
     elt = DLISTE_ELEM_NEXT(elt);
   } 
   return NULL ;
-}
-
-int hash_table_destroy(HashTable *h, 
-		      void (*destroy_cle) (void*), 
-		      void (*destroy_val) (void*)
-		      ){ 
-  assert(h);
-  
-  /* ListElem *liste_elt = NULL ; */
-  /* if (liste_rm(h -> liste_listes_collision, NULL, (void **) &liste_elt) == -1) */
-  /*   return -1; */
-
-
-  ListElem *liste_elt = LISTE_TETE(h->liste_listes_collision);
-
-  while (liste_elt) {
-    DListe *liste = (DListe *) LISTE_ELEM_DATA(liste_elt) ;
-    DListElem *elt = DLISTE_HEAD(liste) ;
-
-    while (elt) {
-      Couple *c = (Couple *) DLISTE_ELEM_DATA(elt) ;
-      if (destroy_cle)
-	destroy_cle(COUPLE_FIRST(c));
-
-      if (destroy_val)
-	destroy_val(COUPLE_SECOND(c));
-
-      free(c);
-      elt = DLISTE_ELEM_NEXT(elt);
-      h->count -- ;
-    }
-    liste_elt = LISTE_ELEM_NEXT(liste_elt);
-    free(liste);
-  }
-
-  free(h->table);
-  return 0 ;
 }
 
 int hash_table_rm (HashTable *h, void *cle, void **data) {

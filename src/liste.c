@@ -99,7 +99,7 @@ int liste_rm (Liste * l , ListElem * elt , void ** data)
 }
 
 
-int liste_destroy (Liste * l)
+int liste_del (Liste * l)
 {
   void * old ;
 
@@ -109,6 +109,7 @@ int liste_destroy (Liste * l)
       if (LISTE_REMOVE(l))
 	LISTE_REMOVE(l)(old);
     }
-  memset(l , 0 , sizeof(l));
+
+  free(l);
   return 0 ;
 }

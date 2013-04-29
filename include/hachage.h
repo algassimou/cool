@@ -98,7 +98,7 @@ int hash_table_rm (HashTable *h, void *cle, void **data) ;
  * \param destroy_cle fonction pour liberer l'espace mémoire occupé par une clé
  * \param destroy_val fonction pour liberer l'espace mémoire occupé par une valeur
  */
-int hash_table_destroy(HashTable *h, 
+int hash_table_del(HashTable *h, 
 		      void (*destroy_cle) (void*), 
 		      void (*destroy_val) (void*)
 		     );

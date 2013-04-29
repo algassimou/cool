@@ -76,8 +76,8 @@ int symbole_table_init (SymboleTable *st) {
 
 void symbole_table_del(SymboleTable *st) {
   assert (st);
-  hash_table_destroy(st -> table, NULL, NULL);
-  liste_destroy(st -> scopes);
+  hash_table_del(st -> table, NULL, NULL);
+  liste_del(st -> scopes);
   free (st);
 }
 
@@ -180,91 +180,3 @@ Symbol *st_find_symbol (SymboleTable *st, char *id) {
 
   return (Symbol *) COUPLE_SECOND(c);
 }
-
-
-/*
-int symbole_table_init_general_scope (SymboleTable *st, char **keys) {
-  assert(st);
-  assert(keys);
-
-  if (symbole_table_add_block(st) == -1)
-    return -1;
-
-  int cpt = 0;
-  char *key = keys[cpt] ;
-  while(key != NULL) {
-    if (symbole_table_insert(st, key, key) == -1)
-      return -1;
-
-    key = keys[++cpt];
-  }
-  return 0;
-}
-
-
-int symbole_table_insert (SymboleTable *st, void *key, void *val) {
-  assert(st != NULL);
-  assert(key != NULL);
-
-  Liste *scope = (Liste *) LISTE_ELEM_DATA(LISTE_TETE(st->block_stack)) ;
-
-  SymboleVal *sym = malloc (sizeof(SymboleVal));
-  assert(sym);
-  sym -> val = val ;
-  sym -> scope = scope ;
-
-  // insertion dans la table de hachage
-  if (hash_table_add(st->table, key, sym) == -1)
-    return -1 ;
-  
-  // gestion de la portée
-  uint32_t hash = st->table->hash_function(key) ;
-  DListe *collision = st->table->table[hash % st->table->size] ;
-  DListElem *elt = DLISTE_HEAD(collision) ;
-
-  return liste_add(scope, LISTE_QUEUE(scope), elt) ;
-}
-
-Couple *symbole_table_search (SymboleTable *st, void *key){
-  assert(st);
-  assert(key);
-  
-  return hash_table_search (st->table, key) ;
-}
-
-int symbole_table_rm_block (SymboleTable *st){
-  Liste *scope = (Liste *) LISTE_ELEM_DATA(LISTE_TETE(st->block_stack)) ;
-  DListElem *val = NULL ;
-  DListe *collision = NULL ;
-  Couple *c = NULL ;
-
-  while(LISTE_SIZE(scope) != 0) {
-    if (liste_rm(scope, NULL, (void **)&val) == -1)
-      return -1 ;
-
-    c = (Couple *) DLISTE_ELEM_DATA(val) ;
-
-    uint32_t hash = st->table->hash_function(COUPLE_FIRST(c)) ;
-    collision = st->table->table[hash % st->table->size] ;
-    if (dliste_rm(collision, val, NULL) == -1)
-      return -1 ;
-
-    free(c);
-  }
-
-  return 0 ;
-}
-
-int symbole_table_add_block (SymboleTable *st) {
-  assert(st);
-
-  Liste *scope =  malloc (sizeof(Liste)) ;
-  assert(scope);
-
-  if (liste_init(scope, NULL) == -1)
-    return -1 ;
-
-  return liste_add(st->block_stack, NULL, scope) ;
-}
-
-*/

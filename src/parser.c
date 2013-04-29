@@ -1458,16 +1458,26 @@ yyreduce:
     // error 
     compile_error(scanner -> filename, scanner -> line_num, 
 		  "%s is already on use\n", yylval.id) ;
+    free(yylval.id);
   } else {
     add_symbole(yylval.id);
   }
 ;}
     break;
 
+  case 20:
+
+/* Line 1455 of yacc.c  */
+#line 75 "/home/algassimou/Programmation/compilation/cool/src/parser.y"
+    {
+  free(yylval.id);
+;}
+    break;
+
 
 
 /* Line 1455 of yacc.c  */
-#line 1471 "/home/algassimou/Programmation/compilation/cool/src/parser.c"
+#line 1481 "/home/algassimou/Programmation/compilation/cool/src/parser.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1679,7 +1689,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 76 "/home/algassimou/Programmation/compilation/cool/src/parser.y"
+#line 79 "/home/algassimou/Programmation/compilation/cool/src/parser.y"
 
 
 int yyerror (char *s) {

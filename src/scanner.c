@@ -9,9 +9,6 @@ Scanner *scanner_create () {
   s = malloc(sizeof(Scanner));
   assert (s);
 
-  s -> string_buffer = malloc (sizeof(StringBuffer));
-  assert (s -> string_buffer);
-
   char * cp ;
   cp = malloc (BUFFER_SIZE + 1);
   assert(cp);

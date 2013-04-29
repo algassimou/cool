@@ -68,10 +68,13 @@ feature : ID {
     // error 
     compile_error(scanner -> filename, scanner -> line_num, 
 		  "%s is already on use\n", yylval.id) ;
+    free(yylval.id);
   } else {
     add_symbole(yylval.id);
   }
-} COLON ID
+} COLON ID {
+  free(yylval.id);
+}
 
 %%
 

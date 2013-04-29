@@ -19,12 +19,11 @@ StringBuffer *string_buffer_create () {
 }
 
 void string_buffer_del (StringBuffer *buffer) {
-  if (buffer) {
-    if (buffer -> data) {
-      free (buffer -> data);
-    }
-    free (buffer);
+  assert(buffer);
+  if (buffer -> data) {
+    free (buffer -> data);
   }
+  free (buffer);
 }
 
 int string_buffer_append(StringBuffer *buffer, char c) {
@@ -64,7 +63,7 @@ char *string_buffer_look_data(StringBuffer *buffer) {
 
 char *string_buffer_get_data(StringBuffer *buffer) {
   assert (buffer);
-  assert(buffer -> data);
+  assert (buffer -> data);
 
   char *res = strndup (buffer -> data, buffer -> len + 1);
   assert (res);
