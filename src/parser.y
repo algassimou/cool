@@ -26,6 +26,7 @@
 %token CLASS CASE ELSE ESAC FALSE FI IF IN INHERITS
 %token LET LOOP OF POOL THEN TRUE WHILE NEW
 
+%nonassoc PREC
 %right AFF 
 %nonassoc NOT 
 %nonassoc LESS LESS_EQ EQUAL
@@ -190,22 +191,22 @@ block_method : LBRACE {
   st_end_scope(tableSymbole);
 } // | LBRACE error {printf ("*******************");} RBRACE 
 
-expr : ID AFF expr
-| expr typed PERIOD ID LPAREN effectives RPAREN
-| ID LPAREN effectives RPAREN
+expr : ID AFF expr {free($1);}
+| expr PERIOD ID LPAREN effectives RPAREN 
+| expr AT ID PERIOD ID LPAREN effectives RPAREN {free($5);}
+| ID LPAREN effectives RPAREN {free($1);}
 | IF expr THEN expr ELSE expr FI 
 | WHILE expr LOOP expr POOL
 | LBRACE exprs RBRACE
-| LET {  
+| LET {
   if (st_create_scope(tableSymbole) == -1) {
     compile_panic("not enable to create a new scope");
-  }
-} let_vars IN expr {
+    }
+    } let_vars IN expr %prec PREC {
   st_end_scope(tableSymbole);
-}
-
-| CASE expr OF case_block ESAC 
-| NEW ID // type 
+  }
+| CASE expr OF case_block ESAC
+| NEW ID {free($2);} // type 
 | ISVOID expr 
 | expr PLUS expr //{printf ("(%d + %d)", $1, $3) ; $$ = $1 + $3;}
 | expr MINUS expr //{printf ("(%d - %d)", $1, $3) ; $$ = $1 - $3}
@@ -217,23 +218,22 @@ expr : ID AFF expr
 | expr EQUAL expr
 | NOT expr
 | LPAREN expr RPAREN //{$$ = $2;}
-| ID
+| ID //{free($1);}
 | INTEGER //{ printf ("******** const integer (%d) **********\n", $1);}
 | STRING //{printf ("******** const string (%s) **********\n", $1); free($1); }
 | TRUE 
 | FALSE
 
-typed : AT ID | empty 
-
 effectives : expr COMMA effectives | expr 
-
 exprs : expr SEMI exprs | expr SEMI
 case_block : case_line case_block | case_line
 case_line : ID COLON ID MATCH expr SEMI {
+  //free($1);
+  //free($3);
   // type
 }
 
-let_vars : let_var COMMA let_vars | let_var 
+let_vars : let_var COMMA let_vars | let_var
 let_var : ID COLON ID {
  if (st_check_scope(tableSymbole, $1)) {
     compile_error(scanner -> filename, scanner -> line_num, 
@@ -245,7 +245,6 @@ let_var : ID COLON ID {
     if (check_type($3) == 0) {
       compile_error(scanner -> filename, scanner -> line_num, 
 		  "%s must be a defined type \n", $3);
-    
       free($3);
     }
   }
@@ -264,7 +263,7 @@ let_var : ID COLON ID {
     
       free($3);
     }
-  }
+ }
 }
 
 %%

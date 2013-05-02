@@ -70,19 +70,20 @@
      TRUE = 286,
      WHILE = 287,
      NEW = 288,
-     AFF = 289,
-     NOT = 290,
-     EQUAL = 291,
-     LESS_EQ = 292,
-     LESS = 293,
-     MINUS = 294,
-     PLUS = 295,
-     DIV = 296,
-     MULT = 297,
-     ISVOID = 298,
-     TILDE = 299,
-     AT = 300,
-     PERIOD = 301
+     PREC = 289,
+     AFF = 290,
+     NOT = 291,
+     EQUAL = 292,
+     LESS_EQ = 293,
+     LESS = 294,
+     MINUS = 295,
+     PLUS = 296,
+     DIV = 297,
+     MULT = 298,
+     ISVOID = 299,
+     TILDE = 300,
+     AT = 301,
+     PERIOD = 302
    };
 #endif
 
@@ -101,7 +102,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 105 "/home/algassimou/Programmation/compilation/cool/src/parser.h"
+#line 106 "/home/algassimou/Programmation/compilation/cool/src/parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
