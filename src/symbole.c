@@ -4,6 +4,8 @@
 #include <string.h>
 #include "symbole.h"
 
+#define DEBUG
+
 Symbol *symbol_create () {
   Symbol *s ;
   s = malloc (sizeof (Symbol));
@@ -23,6 +25,7 @@ void symbol_del (void *s) {
   assert(s);
   Symbol * sym = (Symbol *)s; 
 
+#ifdef DEBUG
   printf ("DEL key (%s) val (%p) scope (%p)\n",
   	  (char *) sym -> id,
   	  sym -> val,
@@ -32,6 +35,7 @@ void symbol_del (void *s) {
   if (sym -> symbol_del) {
     sym -> symbol_del (sym -> id, sym -> val);
   }
+#endif
 
   free(sym);
 }
@@ -76,8 +80,15 @@ int symbole_table_init (SymboleTable *st) {
 
 void symbole_table_del(SymboleTable *st) {
   assert (st);
-  hash_table_del(st -> table, NULL, NULL);
+
+  if (LISTE_SIZE(st -> scopes) != 0) {
+    while (LISTE_SIZE(st -> scopes) != 0) {
+      st_end_scope(st);
+    }
+  }
+  
   liste_del(st -> scopes);
+  hash_table_del(st -> table, NULL, NULL);
   free (st);
 }
 
@@ -89,6 +100,10 @@ int st_create_scope(SymboleTable *st) {
 
   if (liste_init(scope, NULL) == -1)
     return -1 ;
+
+#ifdef DEBUG
+  printf ("================ create scope %p ==================\n", scope);
+#endif
 
   return liste_add(st->scopes, NULL, scope) ;
 }
@@ -123,6 +138,10 @@ int st_end_scope(SymboleTable *st) {
     free(c);
   }
 
+#ifdef DEBUG
+  printf ("================ end scope %p ==================\n", scope);
+#endif
+
   free(scope);
   return 0 ;
 }
@@ -151,11 +170,12 @@ int st_add_symbol (SymboleTable *st, Symbol *s) {
   assert(st);
   assert(s);
 
+#ifdef DEBUG
   printf ("ADD key (%s) val (%p) scope (%p)\n",
   	  (char *) s -> id,
   	  s -> val,
   	  s -> scope);
-
+#endif
 
   // insertion dans la table de hachage
   if (hash_table_add(st->table, s->id, s) == -1)

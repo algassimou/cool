@@ -101,6 +101,14 @@ static void scanner_skip_space (Scanner *scanner, int c) {
   //printf ("ret %c", (char)c);
 }
 
+static int isOperator (int c) {
+  return (c == '+' || c == '-' || 
+	  c == '/' || c == '*' || 
+	  c == '>' || c == '<' || 
+	  c == '=');
+}
+
+
 int yylex (void *s) {
   assert (s);
   Scanner *scanner = (Scanner *) s;
@@ -129,7 +137,28 @@ int yylex (void *s) {
     case '[' : return LBRACKET;
     case ']' : return RBRACKET;
     case '.' : return PERIOD;
-    case '=' : return EQUAL ; // a fixer = ou ==
+    case '@' : return AT;
+    case '~' : return TILDE;
+    case '=' : 
+      c = scanner_next_char(scanner);
+      if (c != -1) {
+	if (c == '>')
+	  return MATCH;
+      }
+
+      (scanner -> pre) -- ;
+      return EQUAL ;
+    case '<' :
+      c = scanner_next_char(scanner);
+      if (c != -1) {
+	if (c == '-')
+	  return AFF;
+	else if (c == '=')
+	  return LESS_EQ;
+      }
+
+      (scanner -> pre) -- ;
+      return LESS ;      
     }
 
     if (isspace(c)) {
@@ -150,7 +179,7 @@ int yylex (void *s) {
 	continue ;
       } else {
 	(scanner -> pre)-- ;
-	return MOINS;
+	return MINUS;
       }
       break;
     case '(' :
@@ -187,37 +216,70 @@ int yylex (void *s) {
       }
     }
 
-    if (isalpha (c) || c == '_') {
+    if (c == '\"') /* String constant*/ {
+      c = scanner_next_char (scanner);
+      if (c == '\"') {
+	yylval.id = malloc (1);
+	yylval.id[0] = '\0';
+	return STRING;
+      }
+      etat = 300 ;
+    }
+    else if (isdigit(c)) {
+      etat = 100;
+    }
+    else if (isalpha (c) || c == '_') {
       etat = 200;
     }
 
+    char *key = NULL ;
+    Symbol *sym = NULL ;
     while (1) {
       string_buffer_append (scanner -> string_buffer, c);
       c = scanner_next_char(scanner);
 
       switch (etat) {
+      case 100 : /* integer */
+	if (isdigit(c)){
+	  continue;
+	}
+
+	(scanner -> pre)-- ;
+	key = string_buffer_look_data(scanner -> string_buffer);       
+	yylval.ival = atoi(key);
+	return INTEGER;
+
       case 200 : /* identifier */
 	if (isIdent(c)) {
 	  continue;
 	} 
       
 	(scanner -> pre)-- ;
-	char *key = string_buffer_look_data(scanner -> string_buffer);       
-	Symbol *sym = st_find_symbol(tableSymbole, key);
+	key = string_buffer_look_data(scanner -> string_buffer);       
+	sym = st_find_symbol(tableSymbole, key);
 
 	if (sym == NULL) { 
 	  //printf("%s new id \n", key);
 	  yylval.id = string_buffer_get_data(scanner -> string_buffer) ;
 	  return ID ;
+
 	} else if (sym -> scope == keywords_scope) {
 	  //printf("%s keyword \n", key);
 	  return  * ((int *) sym -> val);
 	} else {
 	  //printf("%s old id\n", key);
-	  yylval.id = key ;
+	  yylval.id = sym -> id ;
 	  return ID ;
 	}
 	break;
+      case 300 : // string constant
+	if (c != '\"') {
+	  continue;
+	}
+
+	yylval.id = string_buffer_get_data(scanner -> string_buffer) ;
+	return STRING ;
+	break ;
       }
     }
   }

@@ -39,43 +39,50 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     TYPE = 258,
-     ID = 259,
-     FDN = 260,
-     PLUS = 261,
-     MOINS = 262,
-     MULT = 263,
-     DIV = 264,
-     COLON = 265,
-     PERIOD = 266,
-     LPAREN = 267,
-     RPAREN = 268,
-     COMMA = 269,
-     LBRACKET = 270,
-     RBRACKET = 271,
-     EQUAL = 272,
-     SEMI = 273,
-     LBRACE = 274,
-     RBRACE = 275,
-     CLASS = 276,
-     CASE = 277,
-     ELSE = 278,
-     ESAC = 279,
-     FALSE = 280,
-     FI = 281,
-     IF = 282,
-     IN = 283,
-     INHERITS = 284,
-     ISVOID = 285,
-     LET = 286,
-     LOOP = 287,
+     ID = 258,
+     STRING = 259,
+     INTEGER = 260,
+     FDN = 261,
+     COLON = 262,
+     LPAREN = 263,
+     RPAREN = 264,
+     COMMA = 265,
+     MATCH = 266,
+     LBRACKET = 267,
+     RBRACKET = 268,
+     SEMI = 269,
+     LBRACE = 270,
+     RBRACE = 271,
+     CLASS = 272,
+     CASE = 273,
+     ELSE = 274,
+     ESAC = 275,
+     FALSE = 276,
+     FI = 277,
+     IF = 278,
+     IN = 279,
+     INHERITS = 280,
+     LET = 281,
+     LOOP = 282,
+     OF = 283,
+     POOL = 284,
+     THEN = 285,
+     TRUE = 286,
+     WHILE = 287,
      NEW = 288,
-     NOT = 289,
-     OF = 290,
-     POOL = 291,
-     THEN = 292,
-     TRUE = 293,
-     WHILE = 294
+     AFF = 289,
+     NOT = 290,
+     EQUAL = 291,
+     LESS_EQ = 292,
+     LESS = 293,
+     MINUS = 294,
+     PLUS = 295,
+     DIV = 296,
+     MULT = 297,
+     ISVOID = 298,
+     TILDE = 299,
+     AT = 300,
+     PERIOD = 301
    };
 #endif
 
@@ -86,7 +93,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 7 "/home/algassimou/Programmation/compilation/cool/src/parser.y"
+#line 17 "/home/algassimou/Programmation/compilation/cool/src/parser.y"
 
   char *id ;
   int ival;
@@ -94,7 +101,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 98 "/home/algassimou/Programmation/compilation/cool/src/parser.h"
+#line 105 "/home/algassimou/Programmation/compilation/cool/src/parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
