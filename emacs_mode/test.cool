@@ -1,10 +1,10 @@
 class MyClass {
-	a :  Integer ;
-	b :  Integer ; 
+	a :  Int ;
+	b :  Int ; 
 };
 
 class MyClass2 inherits MyClass {
-	a : Integer;
-	b : Integer;
-}
+	a : SELF_TYPE { "ffffffffff" 102}
+	b : Int;
+};
 	

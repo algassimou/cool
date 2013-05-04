@@ -85,20 +85,67 @@ previous line."
     (backward-to-indentation 0)
     (and (= (char-after) (string-to-char "-"))
 	 (= (char-after (+ (point) 1)) (string-to-char "-")))))
+
 ;; syntax highlighting
-;; (regexp-opt '("class" "case" "else" "esac" "false" "fi"
-;;   "if" "in" "inherits" "isvoid" "let" "loop"
-;;   "new" "not" "of" "pool" "then" "true" "while") t)
+(defvar cool-keywords '("class" "case" "else" "esac" "false" "fi" "if" "in" "inherits" "isvoid" "let" "loop" "new" "not" "of" "pool" "then" "true" "while") "Cool language keywords .")
+
+(defvar cool-keywords-regexp
+  ;; "Builds a regexp out of `coffee-indenters-bol' words."
+  (format "\\<%s\\>"
+	  (regexp-opt cool-keywords 'words)))
+
+;; Type
+(defvar cool-namespace-regexp "\\b\\(class\\s +\\(\\S +\\)\\)\\b")
+(defvar cool-inherits-regexp "\\b\\(inherits\\s +\\(\\S +\\)\\)\\b")
+(defvar cool-types-regexp "\\(:\\s *\\(\\S +\\)\\)\\b")
+
+
 
 (defconst cool-font-lock-keywords-1
-  (list 
-   '("\\<\\(c\\(?:ase\\|lass\\)\\|e\\(?:lse\\|sac\\)\\|f\\(?:alse\\|i\\)\\|i\\(?:nherits\\|svoid\\|[fn]\\)\\|l\\(?:et\\|oop\\)\\|n\\(?:ew\\|ot\\)\\|of\\|pool\\|t\\(?:hen\\|rue\\)\\|while\\)\\>" . font-lock-builtin-face)
-   '("\\(\\w*\\)" . font-lock-variable-name-face))
+  `((,cool-namespace-regexp 2 font-lock-type-face)
+    (,cool-inherits-regexp 2 font-lock-type-face)
+    (,cool-keywords-regexp . font-lock-keyword-face)
+    (,cool-types-regexp 2 font-lock-type-face)
+   (,"\\(\\w*\\)" . font-lock-variable-name-face))
   "Minimal highlighting expressions for Cool mode")
+
+;; (defconst cool-font-lock-keywords-1
+;;   (list 
+;;    '("\\<\\(c\\(?:ase\\|lass\\)\\|e\\(?:lse\\|sac\\)\\|f\\(?:alse\\|i\\)\\|i\\(?:nherits\\|svoid\\|[fn]\\)\\|l\\(?:et\\|oop\\)\\|n\\(?:ew\\|ot\\)\\|of\\|pool\\|t\\(?:hen\\|rue\\)\\|while\\)\\>" . font-lock-builtin-face)
+;;    '("\\(\\w*\\)" . font-lock-variable-name-face))
+;;   "Minimal highlighting expressions for Cool mode")
 
 (defvar cool-font-lock-keywords cool-font-lock-keywords-1)
 
 ;; helper functions
+(defvar cool-basic-types '("Bool" "Int" "IO" "String" "SELF_TYPE"))
+(defvar cool-wordList (append cool-keywords cool-basic-types))
+(defun cool-complete-symbol () 
+  "Perform keyword completion on word before cursor."
+  (interactive)
+  (let ((posEnd (point))
+        (meat (thing-at-point 'symbol))
+        maxMatchResult)
+    
+    ;; when nil, set it to empty string, so user can see all lang's keywords.
+    ;; if not done, try-completion on nil result lisp error.
+    (when (not meat) (setq meat ""))
+    (setq maxMatchResult (try-completion meat cool-wordList))
+    
+    (cond ((eq maxMatchResult t))
+          ((null maxMatchResult)
+           (message "Can't find completion for “%s”" meat)
+           (ding))
+          ((not (string= meat maxMatchResult))
+           (delete-region (- posEnd (length meat)) posEnd)
+           (insert maxMatchResult))
+          (t (message "Making completion list…")
+             (with-output-to-temp-buffer "*Completions*"
+               (display-completion-list 
+                (all-completions meat cool-wordList)
+                meat))
+             ((match-end N)ssage "Making completion list…%s" "done")))))
+
 
 (defun cool-comment-dwim (arg)
   "Comment or uncomment current line or region in a smart way.
@@ -167,6 +214,7 @@ previous line."
 (defvar cool-mode-map (make-sparse-keymap) "Key map for Cool mode.")
 (define-key cool-mode-map [remap newline-and-indent] 'cool-newline-and-indent)
 (define-key cool-mode-map [remap comment-dwim] 'cool-comment-dwim)
+(define-key cool-mode-map (kbd "M-TAB") 'cool-complete-symbol)
 ;; (define-key cool-mode-map "\C-cc" 'cool-comment-dwim) 
 
 (easy-menu-define coffee-mode-menu cool-mode-map
@@ -187,10 +235,10 @@ previous line."
   (set (make-local-variable 'tab-width) cool-tab-width)
   (setq major-mode 'cool-mode)
   (setq mode-name "Cool")
-  (message "%s" cool-mode-map)
+;;  (message "%s" cool-mode-map)
   (use-local-map cool-mode-map)
   (run-hooks 'cool-mode-hook))
 
 (provide 'cool-mode)
 
-(add-to-list 'auto-mode-alist '("\\.cool\\'" . cool-mode))
+(add-to-list 'auto-mode-alist '("\\.cl\\'" . cool-mode))
