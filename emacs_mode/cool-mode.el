@@ -97,15 +97,18 @@ previous line."
 ;; Type
 (defvar cool-namespace-regexp "\\b\\(class\\s +\\(\\S +\\)\\)\\b")
 (defvar cool-inherits-regexp "\\b\\(inherits\\s +\\(\\S +\\)\\)\\b")
+(defvar cool-new-regexp "\\(new\\s +\\([a-zA-Z0-9\_\-]+ *\\)\\)\\b")
 (defvar cool-types-regexp "\\(:\\s *\\(\\S +\\)\\)\\b")
 
 
 
 (defconst cool-font-lock-keywords-1
-  `((,cool-namespace-regexp 2 font-lock-type-face)
+  `((,cool-new-regexp 2 font-lock-type-face)
+    (,cool-namespace-regexp 2 font-lock-type-face)
     (,cool-inherits-regexp 2 font-lock-type-face)
     (,cool-keywords-regexp . font-lock-keyword-face)
     (,cool-types-regexp 2 font-lock-type-face)
+    (, "\\(?:self\\)" . font-lock-constant-face)
    (,"\\(\\w*\\)" . font-lock-variable-name-face))
   "Minimal highlighting expressions for Cool mode")
 
